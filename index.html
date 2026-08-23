@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>More Than Conquerors — 4-Week Study</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand" onclick="showHome()" role="button">
+      <span class="brand-cross">✝</span>
+      <div>
+        <div class="brand-title">More Than Conquerors</div>
+        <div class="brand-sub">Romans 8:37 · Mahragan El-Keraza 2026 Study Companion</div>
+      </div>
+    </div>
+    <button id="homeBtn" class="btn-ghost" onclick="showHome()">Home</button>
+  </div>
+</header>
+
+<main id="app">
+  <!-- HOME VIEW -->
+  <section id="homeView" class="view">
+    <div class="hero">
+      <h1>4-Week Study Plan</h1>
+      <p>Work through one day at a time. Each day has a short lesson, flashcards to drill, and a quiz to check what you learned. Finish all 20 days by <strong>September 20</strong>!</p>
+    </div>
+
+    <div class="progress-summary">
+      <div class="progress-bar-outer"><div id="overallBar" class="progress-bar-inner"></div></div>
+      <div id="overallText" class="progress-text">0 of 20 days completed</div>
+    </div>
+
+    <div id="weeksContainer"></div>
+  </section>
+
+  <!-- DAY VIEW -->
+  <section id="dayView" class="view" style="display:none;">
+    <button class="btn-ghost back-btn" onclick="showHome()">← All Days</button>
+    <div id="dayHeader"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="lesson" onclick="switchTab('lesson')">📖 Lesson</button>
+      <button class="tab-btn" data-tab="flashcards" onclick="switchTab('flashcards')">🗂️ Flashcards</button>
+      <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
+
+    <div id="tab-lesson" class="tab-panel"></div>
+    <div id="tab-flashcards" class="tab-panel" style="display:none;"></div>
+    <div id="tab-quiz" class="tab-panel" style="display:none;"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>Content adapted from the Coptic Orthodox Diocese of New York &amp; New England's "More Than Conquerors" Workbook (Grades 9–12), Mahragan El-Keraza 2026, for personal study use. Bible references cited only, no verse text reproduced.</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
