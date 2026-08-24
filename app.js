@@ -16,6 +16,27 @@ const POINTS = {
   examPerfectBonus: 15   // max bonus for exam performance, scaled by score/total
 };
 
+// Calendar anchor for the 20 weekday study days (Mon-Fri x 4 weeks).
+// Change this one line if the study's actual start date is different.
+const START_DATE = "2026-08-24"; // a Monday
+
+// ---------------- DATE HELPERS ----------------
+function todayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+// Day 1..20 map onto Mon-Fri, skipping weekends, starting at START_DATE.
+function dateForDay(dayNum){
+  const offset = 7*Math.floor((dayNum-1)/5) + ((dayNum-1)%5);
+  const d = new Date(START_DATE + "T00:00:00");
+  d.setDate(d.getDate() + offset);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function formatDate(iso){
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString(undefined, { month:"short", day:"numeric", year:"numeric" });
+}
+
 // ---------------- PROGRESS STORAGE ----------------
 function loadProgress(){
   try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
@@ -45,6 +66,40 @@ function getDayProgress(day){
 function isDayCompleted(day){
   const p = progress[day];
   return !!(p && p.quizDone);
+}
+
+// ---------------- ANSWER-REVEAL GATING ----------------
+// Week 1 & 2 answers unlock once Week 2 is fully finished AND its calendar date has arrived.
+// Week 3 & 4 answers unlock once the whole 4-week study is finished AND its calendar date has arrived.
+function isWeekFullyDone(weekName){
+  const days = STUDY_DATA.filter(d => d.week === weekName);
+  return days.length > 0 && days.every(d => isDayCompleted(d.day));
+}
+function lastDayNumOfWeek(weekName){
+  const days = STUDY_DATA.filter(d => d.week === weekName);
+  return Math.max(...days.map(d => d.day));
+}
+function unlockThresholdDayNum(weekName){
+  return (weekName === "Week 1" || weekName === "Week 2")
+    ? lastDayNumOfWeek("Week 2")
+    : lastDayNumOfWeek("Week 4");
+}
+function areAnswersUnlockedForWeek(weekName){
+  const progressOk = (weekName === "Week 1" || weekName === "Week 2")
+    ? (isWeekFullyDone("Week 1") && isWeekFullyDone("Week 2"))
+    : ["Week 1","Week 2","Week 3","Week 4"].every(isWeekFullyDone);
+  const dateOk = todayStr() >= dateForDay(unlockThresholdDayNum(weekName));
+  return progressOk && dateOk;
+}
+function answersUnlockMessage(weekName){
+  const groupLabel = (weekName === "Week 1" || weekName === "Week 2") ? "Week 1 & 2" : "Week 3 & 4";
+  const requiredProgress = (weekName === "Week 1" || weekName === "Week 2") ? "Week 2" : "all 4 weeks";
+  const thresholdDate = dateForDay(unlockThresholdDayNum(weekName));
+  const dateOk = todayStr() >= thresholdDate;
+  if(!dateOk){
+    return `Answers for ${groupLabel} unlock on ${formatDate(thresholdDate)} (and once you've finished ${requiredProgress}).`;
+  }
+  return `Answers for ${groupLabel} unlock once you've finished ${requiredProgress}.`;
 }
 
 // ---------------- STUDENT NAME ----------------
@@ -690,7 +745,92 @@ function retakeQuiz(){
   renderQuiz();
 }
 
+// ---------------- REVIEW PAGE ----------------
+function renderReview(){
+  const weeks = [...new Set(STUDY_DATA.map(d => d.week))];
+  const tabsEl = document.getElementById("reviewWeekTabs");
+  tabsEl.innerHTML = weeks.map(w => {
+    const locked = !areAnswersUnlockedForWeek(w);
+    return `<button class="tab-btn ${w === currentReviewWeek ? 'active' : ''}" onclick="setReviewWeek('${w}')">${w}${locked ? ' 🔒' : ''}</button>`;
+  }).join("");
 
+  const showMissedOnly = document.getElementById("reviewMissedToggle")
+    ? document.getElementById("reviewMissedToggle").checked
+    : false;
+
+  const weekDays = STUDY_DATA.filter(d => d.week === currentReviewWeek);
+  const container = document.getElementById("reviewContent");
+  const answersUnlocked = areAnswersUnlockedForWeek(currentReviewWeek);
+
+  container.innerHTML = `
+    <label class="missed-toggle-row">
+      <input type="checkbox" id="reviewMissedToggle" ${showMissedOnly ? "checked" : ""} onchange="renderReview()" />
+      Show only questions I've missed
+    </label>
+    ${!answersUnlocked ? `<div class="answer-lock-banner">🔒 ${answersUnlockMessage(currentReviewWeek)} You can still read the lesson, flashcards, and see the questions — just not the answers yet.</div>` : ""}
+    <div id="reviewDaysWrap"></div>
+  `;
+
+  const wrap = document.getElementById("reviewDaysWrap");
+  weekDays.forEach(d => {
+    const p = getDayProgress(d.day);
+    const missedNums = new Set(p.quizMissed || []);
+    const examMissedNums = new Set(
+      (p.examResult && p.examResult.details || []).filter(x => !x.isCorrect).map(x => x.num)
+    );
+    const allMissed = new Set([...missedNums, ...examMissedNums]);
+
+    let questionsToShow = d.quiz;
+    if(showMissedOnly) questionsToShow = d.quiz.filter(q => allMissed.has(q.num));
+
+    const block = document.createElement("div");
+    block.className = "review-day-block";
+    block.innerHTML = `
+      <div class="review-day-header" onclick="this.parentElement.classList.toggle('open')">
+        <span>${d.weekday} — ${d.topic}</span>
+        <span class="review-caret">▾</span>
+      </div>
+      <div class="review-day-body">
+        ${showMissedOnly ? "" : `
+          <div class="review-section">
+            <h4>Lesson Summary</h4>
+            <p>${d.summary}</p>
+          </div>
+          <div class="review-section">
+            <h4>Flashcards (${d.flashcards.length})</h4>
+            <div class="review-flash-grid">
+              ${d.flashcards.map(f => `
+                <div class="review-flash-item"><strong>${f.term}</strong><span>${f.def}</span></div>
+              `).join("")}
+            </div>
+          </div>
+        `}
+        <div class="review-section">
+          <h4>${showMissedOnly ? "Questions You've Missed" : "Workbook Questions"}</h4>
+          ${questionsToShow.length === 0
+            ? `<p class="muted-note">${showMissedOnly ? "Nothing missed here yet — nice work!" : "No questions for this day."}</p>`
+            : questionsToShow.map(q => `
+              <div class="review-q">
+                <div class="review-q-text">Q${q.num}. ${q.q}</div>
+                ${answersUnlocked
+                  ? `<div class="review-q-answer">✅ ${q.options[q.correct[0]]}</div>
+                     <div class="review-q-explain">${q.explain}</div>`
+                  : `<div class="review-q-locked">🔒 ${answersUnlockMessage(currentReviewWeek)}</div>`
+                }
+              </div>
+            `).join("")
+          }
+        </div>
+      </div>
+    `;
+    wrap.appendChild(block);
+  });
+}
+
+function setReviewWeek(w){
+  currentReviewWeek = w;
+  renderReview();
+}
 
 // ---------------- EXAM PREP PAGE ----------------
 function getExamPool(dayNum){
