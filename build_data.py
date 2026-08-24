@@ -36,7 +36,7 @@ Q = [
  ["Spiritual death is banishment into a fallen realm. Mortal death is the corruption of our nature.",
   "Spiritual death is a separation from God. Mortal death is being subject to a corrupt realm.",
   "Spiritual death is a corruption of our nature. Mortal death is eternal destruction.",
-  "Spiritual death is a separation from God. Mortal death is when our physical bodies no longer have a heartbeat."],1,
+  "Spiritual death is a separation from God. Mortal death is when our physical bodies no longer have a heartbeat."],3,
  "Spiritual death = separation from God; mortal death = subjection to a fallen, corrupt realm."),
 (11,"St. Athanasius gives us insight into the Cross. What does he say about the spiritual meaning of Christ hanging above the earth?",
  ["That Christ might draw us up to Himself","To represent that He came from heaven","Roman crucifixions were always done this way","So everyone would see that He really died"],0,
@@ -45,7 +45,7 @@ Q = [
  ["The Council of Nicea","The dedication of the Church of the Resurrection in Jerusalem","The discovery of the Cross by Queen Helen","The departure of St. Athanasius"],2,
  "St. Helena's discovery of the True Cross is traditionally dated to 326 AD — 1700 years before 2026."),
 (13,"Sometimes God allows us to go through trials to keep us from falling into future sins. Match this type of trial with the corresponding example.",
- ["Trial of Protection: St. Paul","Trial of Protection: Abraham","Trial of Purification: the Prodigal Son","Trial of Repentance: Job"],1,
+ ["Trial of Protection: St. Paul","Trial of Protection: Abraham","Trial of Purification: the Prodigal Son","Trial of Repentance: Job"],0,
  "Abraham's trials are classic examples of God's protective testing."),
 (14,"What do the Cross and Acts 5:41 have in common?",
  ["They refer to the same people","Joy from tribulation","Suffering due to sin is helpful","We will always have peace"],1,
@@ -74,7 +74,7 @@ Q = [
   "Faith in Christ Jesus is the most important thing","We are thankful for Christ's sacrifice"],1,
  "Colossians 1:3-5 links faith and love to the hope laid up in heaven — hope sustains us through hardship, as joy sustained Christ."),
 (21,"What did Colosse hear about before from Epaphras?",
- ["Resurrection and faith","Love and charity","Glory and thanksgiving","Forgiveness and glory"],1,
+ ["Resurrection and faith","Love and charity","Glory and thanksgiving","Forgiveness and glory"],3,
  "Col 1:4,8 — Epaphras reported their faith in Christ and their love for the saints."),
 (22,"Which of the Colossians' viewpoints did St. Paul try to redirect?",
  ["Salvation is only for the Jews","Jesus is not the Messiah","Love is the only important thing needed for a Christian life","The Trinity is a polytheistic concept"],2,
@@ -94,7 +94,7 @@ Q = [
   "We should study the Gospel so that we can tell others","It's ok if people don't recognize our efforts","Wisdom is needed to speak with unbelievers"],0,
  "Epaphras's faithful, often unseen labor is remembered and honored by God."),
 (26,"In the Hebrew language, there is one combined word for the concept of hearing and the concept of obeying: \u201cshema.\u201d In Deuteronomy 6:4-5, the Shema instructions are to \u201cHear... and love.\u201d What are St. Paul's analogous instructions?",
- ["Listening and praying","Wisdom and understanding","Loving and serving","Praising and worshiping"],2,
+ ["Listening and praying","Wisdom and understanding","Loving and serving","Praising and worshiping"],1,
  "Colossians 1:9-10 prays for knowledge that leads to a life fully pleasing to the Lord — loving and serving in every good work."),
 (27,"Some people say \u201cI understand Christian morals theoretically.\u201d What would St. Paul think about this?",
  ["That's all you need to do","That's not enough","You need to understand deeper","That's a good start, now let's put it into action"],1,
@@ -131,7 +131,7 @@ Q = [
  "Salvation involves our willing participation — \u201cwork out your own salvation\u201d (Phil 2:12)."),
 (37,"St. John Chrysostom says \u201cGod not only has given the honor but also made us strong enough to receive it.\u201d What words of St. Paul is he referencing?",
  ["\u201cDelivered us from the power of darkness\u201d (1:13)","\u201cWe have redemption through His blood\u201d (1:14)",
-  "\u201cStrengthened with all might, according to His glorious power\u201d (1:11)","\u201cQualified us to be partakers of the inheritance\u201d (1:12)"],2,
+  "\u201cStrengthened with all might, according to His glorious power\u201d (1:11)","\u201cQualified us to be partakers of the inheritance\u201d (1:12)"],3,
  "Chrysostom is commenting on Colossians 1:11 — God strengthens us to bear the honor He gives."),
 (38,"Which story is a type of deliverance from darkness, toward a new kingdom?",
  ["The Israelite exodus from Egypt","Adam and Eve banished from Eden","The prodigal son leaving for a new land","The Holy Family's flight to Egypt","Christ defeated the devil, but people still go to Hades"],0,
@@ -158,7 +158,7 @@ Q = [
   "Christ was never created. He is the original image, and we are His copies","We are gods like Christ is God","Christ's image and our image (of God) are the same"],1,
  "Christ is the eternal, uncreated image of God; humanity was made according to that image."),
 (45,"\u201cBlood\u201d has many biblical references. What does St. Paul equate it to?",
- ["The life of a person","The evidence of a sacrifice","The representation of human flesh","The forgiveness of sins"],0,
+ ["The life of a person","The evidence of a sacrifice","The representation of human flesh","The forgiveness of sins"],3,
  "Biblically, blood represents the life of a person (Leviticus 17:11)."),
 (46,"How do Gnostics use the word \u201cemanate\u201d?",
  ["The Son depicts the glory of the Father","The Son is the same essence as the Father",
@@ -181,7 +181,7 @@ Q = [
  ["Matthew 2","John 1","John 6","Mark 16"],1,
  "John 1:3 — \u201cAll things were made through Him\u201d parallels Colossians 1:16."),
 (52,"\u201cAll things were created through Him.\u201d What can humans claim as our own doing?",
- ["Nothing, God created everything","Good deeds","Sin","Tithing"],0,
+ ["Nothing, God created everything","Good deeds","Sin","Tithing"],2,
  "Since all things were created through Christ, nothing is ultimately of our own making."),
 (53,"If a potter molds a vase from clay, the vase serves the purposes of the potter. Similarly, if God created us…",
  ["He gave us free will to please ourselves","We are not our own masters, but His servants",
@@ -301,7 +301,7 @@ Q = [
  ["The Colossians","The Christians","The Gnostics","The Judaizers"],3,
  "Colossians 2:16 addresses the Judaizers, who judged others by food/festival laws."),
 (88,"God, out of His abundant love and grace, allows us sinners to worship Him. How does St. Paul describe this privilege?",
- ["Honor","Reward","Right","Rite"],2,
+ ["Honor","Reward","Right","Rite"],1,
  "It is described as a right/access we have through Christ, not something we earn."),
 (89,"The Ten Commandments God gave Moses strictly forbade the worship of idols. Now after the Resurrection of Christ, God still wants us to worship Him and Him alone. Similarly, St. Paul warns the Colossians against those who…",
  ["Do not hold fast to the Head","Are nourished and knit together","Ask intercession of the saints","Grow with the increase from God"],0,
@@ -315,7 +315,7 @@ Q = [
   "Touching the temple walls made a person clean","Touching a bloody animal sacrifice made a person clean forever"],0,
  "Touching unclean things (dead bodies, unclean animals) rendered a person ritually unclean."),
 (92,"In verse 2:23, St. Paul boldly claims that saying no to certain foods everyday of the year actually has an opposite effect:",
- ["It does NOT guarantee our salvation","It does NOT help impulsiveness","It does NOT help us know Christ","It does NOT make us joyful"],0,
+ ["It does NOT guarantee our salvation","It does NOT help impulsiveness","It does NOT help us know Christ","It does NOT make us joyful"],1,
  "Colossians 2:23 — such self-imposed rules have no real value against the indulgence of the flesh; they don't guarantee salvation."),
 (93,"Chapter 3 starts \u201cIf then you were raised with Christ\u201d, as if to say…",
  ["If you were raised from the dead, then you don't have to address sin anymore","If you seek things above, you cannot have anything on earth",
@@ -328,7 +328,7 @@ Q = [
  ["\u201cAnd when you pray, do not be like the hypocrites...\u201d (Matthew 6:5)",
   "\u201cBut all their works they do to be seen by men...\u201d (Matthew 23:5)",
   "\u201cBut you, when you pray, go into your room...\u201d (Matthew 6:6)",
-  "\u201cIf your hand or foot causes you to sin, cut it off and cast it from you.\u201d (Matthew 18:8)"],1,
+  "\u201cIf your hand or foot causes you to sin, cut it off and cast it from you.\u201d (Matthew 18:8)"],3,
  "Matthew 23:5 describes public showiness — the opposite of a hidden, private life with Christ."),
 (96,"One practical step for controlling anger is…",
  ["Avoid daily activities (school, studying) that make you angry","Pray for patience right before you enter rooms/situations/groups where you've become upset in the past",
@@ -364,7 +364,7 @@ Q = [
  ["Giving everything to another person","Bearing attack without returning it","Trusting God will protect you","Being quiet about the faith"],1,
  "Meekness is strength under control — bearing wrongs without retaliating."),
 (106,"What must we do before we can forgive someone?",
- ["Repent and confess","Explain to them what they did wrong","Endure their wrongdoing patiently","Kindly ask them to stop"],0,
+ ["Repent and confess","Explain to them what they did wrong","Endure their wrongdoing patiently","Kindly ask them to stop"],2,
  "Recognizing our own need for forgiveness (through repentance/confession) shapes our ability to forgive others."),
 (107,"St. Paul uses one word as the chief instruction to summarize all of these teachings. What is it?",
  ["Love","Bear","Endure","Hope"],0,
@@ -473,7 +473,7 @@ Q = [
  ["Prayer of Reconciliation","Romans 6:23","Colossians 3:4","Basilian Liturgy"],1,
  "Romans 6:23."),
 (136,"\u201cYou did not leave us until the end\u201d comes from",
- ["Prayer of Reconciliation","Romans 6:23","Colossians 3:4","Basilian Liturgy"],0,
+ ["Prayer of Reconciliation","Romans 6:23","Colossians 3:4","Basilian Liturgy"],3,
  "This line is from the Prayer of Reconciliation in the Coptic Liturgy."),
 (137,"In the conclusion of each Agpeya hour, we say \u201cwho [God] does not wish the death of the sinner but rather that he returns and lives.\u201d Which verse is this echoing?",
  ["Ezekiel 33:11","Exodus 23:7","Acts 17:28","1 Peter 1:15-16"],0,
@@ -567,7 +567,7 @@ Q = [
   "When the others hear a viewpoint they hadn't considered before, they might see that they were wrong to gossip (see Romans 12:20-21)"],[1,2,3],
  "Speaking up takes effort toward peace (Rom 12:18), can move others toward forgiveness (2 Cor 5:18-20), and can correct gossip (Rom 12:20-21)."),
 (164,"Acts 5:41 reads \u201cSo they departed from the presence of the council, rejoicing that they were counted worthy to suffer shame for His name.\u201d Which type of peace are the apostles demonstrating here?",
- ["Peace of Mind","Peace of Heart","Peace in Relationships","Peace of Conscience"],3,
+ ["Peace of Mind","Peace of Heart","Peace in Relationships","Peace of Conscience"],1,
  "Their rejoicing under persecution reflects a clear peace of conscience before God."),
 (165,"Happiness is a momentary feeling of bliss. Conversely, peace…",
  ["Grows when you choose not to share it","Is a human creation","Cannot be taken away by hardship","Lasts only one moment"],2,
@@ -828,121 +828,65 @@ FLASH = {
     ("Father of confession","A safe guide because he puts your salvation first.")],
 }
 
-def week_number_for_day(day_num):
-    return (day_num - 1) // 5 + 1
+
+# ---------------------------------------------------------------
+# Study guide context (from the workbook's own 4-section topic
+# outline). Each of the 4 sections below corresponds exactly to a
+# contiguous Q-range shared by every day inside it, so it's attached
+# per-day as shared context rather than guessed at question-level.
+# ---------------------------------------------------------------
+with open("study_guide_source.json", encoding="utf-8") as f:
+    _SG = json.load(f)["study_guide"]["weeks"]
+
+# (loQ, hiQ) -> which study-guide "week" (section) it maps to, 0-indexed
+SECTION_RANGES = [(1, 15), (16, 70), (71, 116), (117, 194)]
+
+def section_for(qlo, qhi):
+    for i, (lo, hi) in enumerate(SECTION_RANGES):
+        if qlo >= lo and qhi <= hi:
+            return _SG[i]
+    return None
 
 def build_day(meta):
     day_num, week, weekday, bible, wrange, topic, time_est, qlo, qhi = meta
-    workbook_questions = []
+    quiz = []
     for q in Q:
         num, text, options, correct, expl = q
         if qlo <= num <= qhi:
-            workbook_questions.append({
+            quiz.append({
                 "num": num, "q": text, "options": options,
                 "correct": correct if isinstance(correct, list) else [correct],
                 "multi": isinstance(correct, list),
                 "explain": expl
             })
     flash = [{"term": t, "def": d} for t, d in FLASH.get(day_num, [])]
+
+    section = section_for(qlo, qhi)
+    section_ctx = None
+    if section:
+        section_ctx = {
+            "sectionTitle": section["title"],
+            "objectives": section["objectives"],
+            "topics": [{"title": t["title"], "summary": t["summary"]} for t in section["topics"]]
+        }
+
     return {
-        "day": day_num, "weekNum": week_number_for_day(day_num), "week": week, "weekday": weekday,
+        "day": day_num, "week": week, "weekday": weekday,
         "bible": bible, "workbookRange": wrange, "topic": topic, "time": time_est,
         "summary": LESSONS.get(day_num, ""),
         "flashcards": flash,
-        "workbookQuestions": workbook_questions
+        "sectionContext": section_ctx,
+        "quiz": quiz
     }
 
 data = [build_day(m) for m in DAYS]
 
-# ---------------------------------------------------------------
-# Daily Quiz generator: ~5 auto-generated MC questions per day,
-# built ONLY from that day's own flashcards (term -> definition),
-# with distractor definitions drawn from OTHER days so the wording
-# is distinct from the literal workbook questions used in the exam bank.
-# ---------------------------------------------------------------
-import random
-random.seed(42)
-
-all_flash_defs = []
-for d in data:
-    for fc in d["flashcards"]:
-        all_flash_defs.append((d["day"], fc["def"]))
-
-def make_daily_quiz(day_obj):
-    fcs = day_obj["flashcards"]
-    quiz = []
-    pool = fcs[:5] if len(fcs) >= 5 else fcs
-    other_defs = [defn for (dnum, defn) in all_flash_defs if dnum != day_obj["day"]]
-    for i, fc in enumerate(pool):
-        correct_def = fc["def"]
-        distractor_pool = [d for d in other_defs if d != correct_def]
-        distractors = random.sample(distractor_pool, k=min(3, len(distractor_pool)))
-        options = distractors + [correct_def]
-        random.shuffle(options)
-        correct_idx = options.index(correct_def)
-        quiz.append({
-            "id": f"D{day_obj['day']}-QZ{i+1}",
-            "q": f"What does this refer to: \u201c{fc['term']}\u201d?",
-            "options": options,
-            "correct": [correct_idx],
-            "multi": False,
-            "explain": f"\u201c{fc['term']}\u201d refers to: {correct_def}"
-        })
-    return quiz
-
-for d in data:
-    d["dailyQuiz"] = make_daily_quiz(d)
-
-# ---------------------------------------------------------------
-# Weekly metadata + exam question pools (drawn only from the real
-# workbook question bank, grouped by week)
-# ---------------------------------------------------------------
-WEEKS_META = []
-for wk in range(1, 5):
-    days_in_week = [d for d in data if d["weekNum"] == wk]
-    pool = []
-    for d in days_in_week:
-        pool.extend(d["workbookQuestions"])
-    WEEKS_META.append({
-        "weekNum": wk,
-        "label": f"Week {wk}",
-        "dayIds": [d["day"] for d in days_in_week],
-        "topics": [d["topic"] for d in days_in_week],
-        "examPool": pool
-    })
-
-# ---------------------------------------------------------------
-# Points configuration (kept separate/configurable, not hardcoded in app.js)
-# ---------------------------------------------------------------
-POINTS_CONFIG = {
-    "lesson": 10,
-    "flashcards": 10,
-    "dailyQuiz": 15,
-    "examComplete": 15,
-    "examBonusPerCorrect": 1,
-    "examMaxQuestions": 15
-}
-
-OUTPUT = {
-    "days": data,
-    "weeks": WEEKS_META,
-    "points": POINTS_CONFIG
-}
-
 with open("data.js", "w") as f:
     f.write("// Auto-generated content data for the More Than Conquerors study app\n")
-    f.write("var STUDY_DATA = ")
-    f.write(json.dumps(OUTPUT["days"], indent=2, ensure_ascii=False))
-    f.write(";\n\n")
-    f.write("var WEEKS_DATA = ")
-    f.write(json.dumps(OUTPUT["weeks"], indent=2, ensure_ascii=False))
-    f.write(";\n\n")
-    f.write("var POINTS_CONFIG = ")
-    f.write(json.dumps(OUTPUT["points"], indent=2, ensure_ascii=False))
+    f.write("const STUDY_DATA = ")
+    f.write(json.dumps(data, indent=2, ensure_ascii=False))
     f.write(";\n")
 
 print("Days:", len(data))
-print("Total workbook Qs:", sum(len(d["workbookQuestions"]) for d in data))
+print("Total quiz Qs:", sum(len(d["quiz"]) for d in data))
 print("Total flashcards:", sum(len(d["flashcards"]) for d in data))
-print("Total daily quiz Qs:", sum(len(d["dailyQuiz"]) for d in data))
-print("Weeks:", len(WEEKS_META), "| exam pool sizes:", [len(w["examPool"]) for w in WEEKS_META])

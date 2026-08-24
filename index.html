@@ -8,63 +8,54 @@
 </head>
 <body>
 
-<!-- NICKNAME MODAL -->
-<div id="nameModal" class="modal-overlay" style="display:none;">
-  <div class="modal-box">
-    <div class="brand-cross" style="font-size:36px; text-align:center;">✝</div>
-    <h2 style="text-align:center; margin-top:4px;">Welcome!</h2>
-    <p style="text-align:center; color:var(--muted);">What should we call you? This is only stored on your own device.</p>
-    <input id="nameInput" type="text" maxlength="20" placeholder="Your first name or nickname" />
-    <button class="small-btn" style="width:100%; margin-top:12px;" onclick="saveName()">Let's go!</button>
-  </div>
-</div>
-
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="brand" onclick="showView('home')" role="button">
+    <div class="brand" onclick="showHome()" role="button">
       <span class="brand-cross">✝</span>
       <div>
         <div class="brand-title">More Than Conquerors</div>
-        <div class="brand-sub">Romans 8:37 · Mahragan El-Keraza 2026</div>
+        <div class="brand-sub">Romans 8:37 · Mahragan El-Keraza 2026 Study Companion</div>
       </div>
     </div>
-    <div id="greetingBadge" class="greeting-badge" onclick="showView('scorecard')"></div>
+    <nav class="topnav">
+      <button class="btn-ghost" onclick="showHome()">Home</button>
+      <button class="btn-ghost" onclick="showReview()">Review</button>
+      <button class="btn-ghost" onclick="showExamPrep()">Exam Prep</button>
+    </nav>
   </div>
-  <nav class="mainnav">
-    <button class="nav-btn active" data-view="home" onclick="showView('home')">🏠 Home</button>
-    <button class="nav-btn" data-view="review" onclick="showView('review')">📚 Review</button>
-    <button class="nav-btn" data-view="exam" onclick="showView('exam')">📝 Exam Prep</button>
-    <button class="nav-btn" data-view="scorecard" onclick="showView('scorecard')">🏆 Scorecard</button>
-  </nav>
 </header>
 
 <main id="app">
-
   <!-- HOME VIEW -->
   <section id="homeView" class="view">
     <div class="hero">
       <h1>4-Week Study Plan</h1>
-      <p>Work through one day at a time: read the lesson, drill the flashcards, take the daily quiz. Finish all 20 days by <strong>September 20</strong>!</p>
+      <div id="homeGreeting" class="home-greeting"></div>
+      <p>Work through one day at a time. Each day has a short lesson, flashcards to drill, and a quiz to check what you learned. Finish all 20 days by <strong>September 20</strong>!</p>
     </div>
+
+    <div id="statsRow" class="stats-row"></div>
 
     <div class="progress-summary">
       <div class="progress-bar-outer"><div id="overallBar" class="progress-bar-inner"></div></div>
       <div id="overallText" class="progress-text">0 of 20 days completed</div>
+      <button class="small-btn secondary scorecard-btn" onclick="openScorecard()">🏆 My Scorecard</button>
     </div>
 
-    <div id="todayCardWrap"></div>
+    <div id="todayStudyBox" class="today-study-box" style="display:none;"></div>
+
     <div id="weeksContainer"></div>
   </section>
 
   <!-- DAY VIEW -->
   <section id="dayView" class="view" style="display:none;">
-    <button class="btn-ghost back-btn" onclick="showView('home')">← All Days</button>
+    <button class="btn-ghost back-btn" onclick="showHome()">← All Days</button>
     <div id="dayHeader"></div>
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="lesson" onclick="switchTab('lesson')">📖 Lesson</button>
       <button class="tab-btn" data-tab="flashcards" onclick="switchTab('flashcards')">🗂️ Flashcards</button>
-      <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')">✅ Daily Quiz</button>
+      <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
     </div>
 
     <div id="tab-lesson" class="tab-panel"></div>
@@ -74,31 +65,26 @@
 
   <!-- REVIEW VIEW -->
   <section id="reviewView" class="view" style="display:none;">
-    <h1>Review</h1>
-    <p class="muted-p">Browse everything you've covered, organized by week. Great for studying before an exam.</p>
-    <div id="reviewWeekPicker" class="week-pill-row"></div>
+    <button class="btn-ghost back-btn" onclick="showHome()">← Home</button>
+    <h1 class="section-title">Review</h1>
+    <div id="reviewWeekTabs" class="tabs review-week-tabs"></div>
     <div id="reviewContent"></div>
   </section>
 
-  <!-- EXAM VIEW -->
+  <!-- EXAM PREP VIEW -->
   <section id="examView" class="view" style="display:none;">
-    <h1>Exam Prep</h1>
-    <p class="muted-p">One 15-question exam per week, pulled from the real workbook questions. You only get <strong>one attempt</strong> per week — make it count!</p>
-    <div id="examWeekList"></div>
-    <div id="examRunner" style="display:none;"></div>
+    <button class="btn-ghost back-btn" onclick="showHome()">← Home</button>
+    <h1 class="section-title">Exam Prep</h1>
+    <div id="examDaysWrap"></div>
   </section>
-
-  <!-- SCORECARD VIEW -->
-  <section id="scorecardView" class="view" style="display:none;">
-    <h1>My Scorecard</h1>
-    <div id="scorecardContent"></div>
-  </section>
-
 </main>
 
 <footer class="footer">
-  <p>Content adapted from the Coptic Orthodox Diocese of New York &amp; New England's "More Than Conquerors" Workbook (Grades 9–12), Mahragan El-Keraza 2026, for personal study use. Bible references cited only, no verse text reproduced. Daily Quiz questions are auto-generated from the workbook's own flashcard content; Exam questions are the real workbook questions.</p>
+  <p>Content adapted from the Coptic Orthodox Diocese of New York &amp; New England's "More Than Conquerors" Workbook (Grades 9–12), Mahragan El-Keraza 2026, for personal study use. Bible references cited only, no verse text reproduced.</p>
 </footer>
+
+<div id="modalOverlay" class="modal-overlay" style="display:none;"></div>
+<div id="toastEl" class="toast"></div>
 
 <script src="data.js"></script>
 <script src="app.js"></script>
