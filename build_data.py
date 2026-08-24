@@ -828,13 +828,16 @@ FLASH = {
     ("Father of confession","A safe guide because he puts your salvation first.")],
 }
 
+def week_number_for_day(day_num):
+    return (day_num - 1) // 5 + 1
+
 def build_day(meta):
     day_num, week, weekday, bible, wrange, topic, time_est, qlo, qhi = meta
-    quiz = []
+    workbook_questions = []
     for q in Q:
         num, text, options, correct, expl = q
         if qlo <= num <= qhi:
-            quiz.append({
+            workbook_questions.append({
                 "num": num, "q": text, "options": options,
                 "correct": correct if isinstance(correct, list) else [correct],
                 "multi": isinstance(correct, list),
@@ -842,21 +845,104 @@ def build_day(meta):
             })
     flash = [{"term": t, "def": d} for t, d in FLASH.get(day_num, [])]
     return {
-        "day": day_num, "week": week, "weekday": weekday,
+        "day": day_num, "weekNum": week_number_for_day(day_num), "week": week, "weekday": weekday,
         "bible": bible, "workbookRange": wrange, "topic": topic, "time": time_est,
         "summary": LESSONS.get(day_num, ""),
         "flashcards": flash,
-        "quiz": quiz
+        "workbookQuestions": workbook_questions
     }
 
 data = [build_day(m) for m in DAYS]
 
+# ---------------------------------------------------------------
+# Daily Quiz generator: ~5 auto-generated MC questions per day,
+# built ONLY from that day's own flashcards (term -> definition),
+# with distractor definitions drawn from OTHER days so the wording
+# is distinct from the literal workbook questions used in the exam bank.
+# ---------------------------------------------------------------
+import random
+random.seed(42)
+
+all_flash_defs = []
+for d in data:
+    for fc in d["flashcards"]:
+        all_flash_defs.append((d["day"], fc["def"]))
+
+def make_daily_quiz(day_obj):
+    fcs = day_obj["flashcards"]
+    quiz = []
+    pool = fcs[:5] if len(fcs) >= 5 else fcs
+    other_defs = [defn for (dnum, defn) in all_flash_defs if dnum != day_obj["day"]]
+    for i, fc in enumerate(pool):
+        correct_def = fc["def"]
+        distractor_pool = [d for d in other_defs if d != correct_def]
+        distractors = random.sample(distractor_pool, k=min(3, len(distractor_pool)))
+        options = distractors + [correct_def]
+        random.shuffle(options)
+        correct_idx = options.index(correct_def)
+        quiz.append({
+            "id": f"D{day_obj['day']}-QZ{i+1}",
+            "q": f"What does this refer to: \u201c{fc['term']}\u201d?",
+            "options": options,
+            "correct": [correct_idx],
+            "multi": False,
+            "explain": f"\u201c{fc['term']}\u201d refers to: {correct_def}"
+        })
+    return quiz
+
+for d in data:
+    d["dailyQuiz"] = make_daily_quiz(d)
+
+# ---------------------------------------------------------------
+# Weekly metadata + exam question pools (drawn only from the real
+# workbook question bank, grouped by week)
+# ---------------------------------------------------------------
+WEEKS_META = []
+for wk in range(1, 5):
+    days_in_week = [d for d in data if d["weekNum"] == wk]
+    pool = []
+    for d in days_in_week:
+        pool.extend(d["workbookQuestions"])
+    WEEKS_META.append({
+        "weekNum": wk,
+        "label": f"Week {wk}",
+        "dayIds": [d["day"] for d in days_in_week],
+        "topics": [d["topic"] for d in days_in_week],
+        "examPool": pool
+    })
+
+# ---------------------------------------------------------------
+# Points configuration (kept separate/configurable, not hardcoded in app.js)
+# ---------------------------------------------------------------
+POINTS_CONFIG = {
+    "lesson": 10,
+    "flashcards": 10,
+    "dailyQuiz": 15,
+    "examComplete": 15,
+    "examBonusPerCorrect": 1,
+    "examMaxQuestions": 15
+}
+
+OUTPUT = {
+    "days": data,
+    "weeks": WEEKS_META,
+    "points": POINTS_CONFIG
+}
+
 with open("data.js", "w") as f:
     f.write("// Auto-generated content data for the More Than Conquerors study app\n")
-    f.write("const STUDY_DATA = ")
-    f.write(json.dumps(data, indent=2, ensure_ascii=False))
+    f.write("var STUDY_DATA = ")
+    f.write(json.dumps(OUTPUT["days"], indent=2, ensure_ascii=False))
+    f.write(";\n\n")
+    f.write("var WEEKS_DATA = ")
+    f.write(json.dumps(OUTPUT["weeks"], indent=2, ensure_ascii=False))
+    f.write(";\n\n")
+    f.write("var POINTS_CONFIG = ")
+    f.write(json.dumps(OUTPUT["points"], indent=2, ensure_ascii=False))
     f.write(";\n")
 
 print("Days:", len(data))
-print("Total quiz Qs:", sum(len(d["quiz"]) for d in data))
+print("Total workbook Qs:", sum(len(d["workbookQuestions"]) for d in data))
 print("Total flashcards:", sum(len(d["flashcards"]) for d in data))
+print("Total daily quiz Qs:", sum(len(d["dailyQuiz"]) for d in data))
+print("Weeks:", len(WEEKS_META), "| exam pool sizes:", [len(w["examPool"]) for w in WEEKS_META])
