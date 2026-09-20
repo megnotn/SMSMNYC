@@ -138,10 +138,16 @@
    CONFIG — adjust these before exam day if needed
    ============================================================ */
 const EXAM_CONFIG = {
-  totalQuestions: 35,
+  totalQuestions: 30,
+  historicalCount: 5,     // how many of the 30 must come from the historical/contextual set below
   timeLimitMinutes: 40,   // set to 0 to disable the countdown timer
   maxViolations: 3,       // exits from fullscreen / tab-switches allowed before auto-submit
-  storageKey: "mtc_finalExam_v1"
+  storageKey: "mtc_finalExam_v1",
+  adminName: "Megnot Abebe",   // logging in with this exact name (case-insensitive) opens the results dashboard instead of the exam
+  // Paste your Google Apps Script Web App URL here (see SETUP_INSTRUCTIONS.md) to enable
+  // central score collection. Leave blank and the exam still works, but the admin
+  // dashboard will only ever show attempts made on this same browser/device.
+  scriptUrl: ""
 };
 
 /* ============================================================
@@ -154,6 +160,35 @@ let ALL_QUESTIONS = [];
     (day.quiz || []).forEach(q => ALL_QUESTIONS.push(q));
   });
 })();
+
+/* ------------------------------------------------------------
+   Question numbers EXCLUDED from the final exam entirely:
+   (a) self-referential / context-dependent questions that only
+       make sense next to another specific question ("the previous
+       question", "match the words to complete THE verse" with no
+       verse shown, etc.) — these break once questions are shuffled
+       independently of each other.
+   (b) pure citation-hunting trivia — "which verse/chapter…",
+       "where do we read/hear…", "…comes from", "…echoes/reflects/
+       references which verse" — i.e. testing whether a student can
+       locate a citation rather than whether they understood the
+       lesson.
+   ------------------------------------------------------------ */
+const DANGLING_REFERENCE_NUMS = new Set([36, 42, 62, 73, 116, 139, 151, 191]);
+const CITATION_TRIVIA_NUMS = new Set([
+  2, 5, 15, 16, 23, 31, 37, 40, 51, 55, 58, 60, 67, 70, 86, 95,
+  117, 135, 136, 137, 142, 157, 162, 174, 181, 193
+]);
+const EXCLUDED_NUMS = new Set([...DANGLING_REFERENCE_NUMS, ...CITATION_TRIVIA_NUMS]);
+
+/* Historical/contextual facts (background of the epistle, heresies,
+   Roman crucifixion practice, the 1700th-anniversary occasion) —
+   capped at EXAM_CONFIG.historicalCount out of the total; everything
+   else drawn for the exam is a general theological principle. */
+const HISTORICAL_NUMS = new Set([12, 17, 30, 132, 133]);
+
+const HISTORICAL_POOL = ALL_QUESTIONS.filter(q => HISTORICAL_NUMS.has(q.num));
+const PRINCIPLE_POOL = ALL_QUESTIONS.filter(q => !EXCLUDED_NUMS.has(q.num) && !HISTORICAL_NUMS.has(q.num));
 
 /* ============================================================
    STATE
@@ -224,6 +259,10 @@ function handleStartClick(){
     msg.innerHTML = `<div class="banner danger">Please enter your name.</div>`;
     return;
   }
+  if(name.trim().toLowerCase() === EXAM_CONFIG.adminName.trim().toLowerCase()){
+    renderAdminDashboard();
+    return;
+  }
   const locks = loadLocks();
   const key = name.toLowerCase();
   if(locks[key]){
@@ -234,7 +273,9 @@ function handleStartClick(){
   if(resumed){
     state = resumed;
   } else {
-    const picked = shuffle(ALL_QUESTIONS).slice(0, EXAM_CONFIG.totalQuestions);
+    const historicalPicked = shuffle(HISTORICAL_POOL).slice(0, EXAM_CONFIG.historicalCount);
+    const principlePicked = shuffle(PRINCIPLE_POOL).slice(0, EXAM_CONFIG.totalQuestions - historicalPicked.length);
+    const picked = shuffle([...historicalPicked, ...principlePicked]);
     const order = picked.map(q => {
       const optIdx = q.options.map((opt,i)=>i);
       const shuffledIdx = shuffle(optIdx);
@@ -515,7 +556,100 @@ function finalizeSubmit(reasonNote){
   saveLocks(locks);
   clearProgress(state.name);
   exitLockdown();
+  sendResultToSheet(locks[state.name.toLowerCase()]);
   renderResults(locks[state.name.toLowerCase()]);
+}
+
+/* ============================================================
+   REMOTE SCORE COLLECTION (Google Sheet via Apps Script)
+   ============================================================ */
+function sendResultToSheet(record){
+  if(!EXAM_CONFIG.scriptUrl) return; // not configured — local-only fallback
+  const payload = {
+    name: record.displayName,
+    score: record.score,
+    total: record.total,
+    violations: record.violations,
+    note: record.note || ""
+  };
+  // no-cors: we can't read the response, but we don't need to — the write still lands.
+  // The local lock (saveLocks, above) is what actually prevents a retake; this is best-effort.
+  fetch(EXAM_CONFIG.scriptUrl, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {"Content-Type": "text/plain"},
+    body: JSON.stringify(payload)
+  }).catch(() => { /* offline or blocked — local result is still saved */ });
+}
+
+function renderAdminDashboard(){
+  app.innerHTML = `
+    <div class="card">
+      <h1>📊 Results Dashboard</h1>
+      ${EXAM_CONFIG.scriptUrl
+        ? `<p class="muted">Live from the shared Google Sheet — every student's device reports here on submit.</p>`
+        : `<div class="banner danger">No shared Sheet is configured yet (EXAM_CONFIG.scriptUrl is blank), so this only shows attempts submitted on <strong>this browser</strong>, not other students' devices. See SETUP_INSTRUCTIONS.md.</div>`}
+      <div id="adminBody">Loading…</div>
+      <div class="nav-row">
+        <button class="btn secondary" id="refreshBtn">Refresh</button>
+        <button class="btn secondary" id="backBtn">Back</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("backBtn").onclick = renderNameGate;
+  document.getElementById("refreshBtn").onclick = loadAdminData;
+  loadAdminData();
+}
+
+async function loadAdminData(){
+  const body = document.getElementById("adminBody");
+  body.innerHTML = "Loading…";
+  let rows = [];
+  if(EXAM_CONFIG.scriptUrl){
+    try{
+      const res = await fetch(EXAM_CONFIG.scriptUrl, {method:"GET"});
+      rows = await res.json();
+    } catch(e){
+      body.innerHTML = `<div class="banner danger">Couldn't reach the Sheet. Check EXAM_CONFIG.scriptUrl and that the Apps Script is deployed with "Anyone" access.</div>`;
+      return;
+    }
+  } else {
+    const locks = loadLocks();
+    rows = Object.values(locks).map(r => ({
+      name: r.displayName, score: r.score, total: r.total,
+      percent: Math.round((r.score/r.total)*100)+"%",
+      timestamp: new Date(r.submittedAt).toLocaleString(),
+      violations: r.violations, note: r.note
+    }));
+  }
+  if(!rows.length){
+    body.innerHTML = `<p class="muted">No submissions yet.</p>`;
+    return;
+  }
+  rows.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const avg = (rows.reduce((s,r)=>s + (parseFloat(r.score)/parseFloat(r.total)), 0) / rows.length * 100).toFixed(0);
+  body.innerHTML = `
+    <p class="muted">${rows.length} submission(s) · class average ${avg}%</p>
+    <div style="overflow-x:auto;">
+    <table style="width:100%; border-collapse:collapse; font-size:13.5px;">
+      <thead><tr style="text-align:left; border-bottom:2px solid var(--border);">
+        <th style="padding:6px;">Name</th><th style="padding:6px;">Score</th><th style="padding:6px;">%</th>
+        <th style="padding:6px;">Left exam?</th><th style="padding:6px;">Submitted</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:6px;">${escapeHtml(String(r.name))}</td>
+            <td style="padding:6px;">${r.score}/${r.total}</td>
+            <td style="padding:6px;">${r.percent || Math.round((r.score/r.total)*100)+"%"}</td>
+            <td style="padding:6px;">${r.violations > 0 ? `⚠️ ${r.violations}x` : "—"}</td>
+            <td style="padding:6px;">${escapeHtml(String(r.timestamp))}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+    </div>
+  `;
 }
 
 function renderResults(record){
