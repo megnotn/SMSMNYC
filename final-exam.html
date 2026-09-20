@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Final Exam — More Than Conquerors</title>
+<style>
+  :root{
+    --purple: #5b2a86;
+    --purple-dark: #3d1c5c;
+    --gold: #e0a52c;
+    --teal: #2f8f8a;
+    --red: #c93b4a;
+    --bg: #f6f3fb;
+    --card: #ffffff;
+    --text: #2c2233;
+    --muted: #6c6178;
+    --border: #e4dcf0;
+    --green: #2e9e5b;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-user-select:none; user-select:none; /* deterrent only, not real security */
+  }
+  a{color:inherit;}
+  .wrap{max-width:640px; margin:0 auto; padding:20px 16px 60px;}
+  .topbar{
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    color:white; padding:16px; text-align:center;
+  }
+  .topbar .brand-cross{font-size:26px; color:var(--gold); margin-right:6px;}
+  .topbar .brand-title{font-weight:700; font-size:18px;}
+  .topbar .brand-sub{font-size:12px; opacity:0.85; margin-top:2px;}
+
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:22px; margin-top:20px; box-shadow:0 2px 10px rgba(0,0,0,0.04);
+  }
+  h1{font-size:22px; color:var(--purple-dark); margin:0 0 10px;}
+  p{line-height:1.55; color:var(--text);}
+  .muted{color:var(--muted); font-size:13.5px;}
+  label{display:block; font-weight:600; margin-bottom:6px; font-size:14px;}
+  input[type=text]{
+    width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--border);
+    font-size:15px; margin-bottom:14px;
+  }
+  input[type=text]:focus{outline:2px solid var(--teal);}
+  .btn{
+    display:inline-block; background: var(--purple); color:white; border:none;
+    padding:13px 22px; border-radius:24px; font-size:15px; font-weight:600;
+    cursor:pointer; width:100%; text-align:center;
+  }
+  .btn:hover{background:var(--purple-dark);}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn.secondary{background:white; color:var(--purple); border:1.5px solid var(--purple);}
+  .btn.danger{background:var(--red);}
+  ul.rules{padding-left:20px; margin:10px 0; font-size:14px; color:var(--text);}
+  ul.rules li{margin-bottom:6px;}
+
+  .exam-header{
+    display:flex; justify-content:space-between; align-items:center;
+    background:white; border-bottom:1px solid var(--border); padding:12px 16px;
+    position:sticky; top:0; z-index:5;
+  }
+  .exam-progress{font-weight:700; color:var(--purple-dark); font-size:14px;}
+  .exam-timer{font-weight:700; font-size:14px; color:var(--teal);}
+  .exam-timer.low{color:var(--red);}
+
+  .qbar-outer{background:var(--border); height:6px;}
+  .qbar-inner{background:linear-gradient(90deg,var(--gold),var(--teal)); height:100%; width:0%; transition:width .3s;}
+
+  .q-num{font-size:12.5px; color:var(--muted); font-weight:700; letter-spacing:.03em; text-transform:uppercase;}
+  .q-text{font-size:17px; font-weight:600; margin:8px 0 18px; color:var(--text);}
+  .opt{
+    display:flex; align-items:flex-start; gap:10px;
+    border:1.5px solid var(--border); border-radius:10px; padding:12px 14px;
+    margin-bottom:10px; cursor:pointer; font-size:14.5px; background:white;
+  }
+  .opt:hover{border-color:var(--teal);}
+  .opt.selected{border-color:var(--purple); background:#f2ebfa;}
+  .opt .marker{
+    flex:0 0 auto; width:18px; height:18px; border:2px solid var(--muted); margin-top:1px;
+    border-radius:50%;
+  }
+  .opt.multi .marker{border-radius:4px;}
+  .opt.selected .marker{background:var(--purple); border-color:var(--purple);}
+  .nav-row{display:flex; gap:10px; margin-top:18px;}
+  .nav-row .btn{width:auto; flex:1;}
+
+  .banner{
+    background:#fff4e0; border:1.5px solid var(--gold); color:#7a5410;
+    border-radius:10px; padding:10px 14px; font-size:13.5px; margin-bottom:14px;
+  }
+  .banner.danger{background:#fdeaec; border-color:var(--red); color:#8c1f2b;}
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(30,15,45,0.92); color:white;
+    display:flex; align-items:center; justify-content:center; z-index:50; padding:20px;
+    text-align:center;
+  }
+  .overlay-box{max-width:420px;}
+  .overlay-box h2{margin-top:0;}
+  .overlay .btn{width:auto; padding:14px 30px; margin-top:16px;}
+
+  .score-big{font-size:44px; font-weight:800; color:var(--purple-dark); text-align:center; margin:8px 0;}
+  .score-sub{text-align:center; color:var(--muted); margin-bottom:18px;}
+
+  .review-item{border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px;}
+  .review-item.correct{border-left:4px solid var(--green);}
+  .review-item.incorrect{border-left:4px solid var(--red);}
+  .review-q{font-weight:600; margin-bottom:6px;}
+  .review-line{font-size:13.5px; margin:2px 0;}
+  .review-line.your-wrong{color:var(--red);}
+  .review-line.correct-answer{color:var(--green);}
+  .review-explain{font-size:13px; color:var(--muted); margin-top:6px; font-style:italic;}
+  footer{text-align:center; font-size:12px; color:var(--muted); margin-top:30px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div><span class="brand-cross">✝</span><span class="brand-title">More Than Conquerors — Final Exam</span></div>
+  <div class="brand-sub">Romans 8:37 · Mahragan El-Keraza 2026</div>
+</div>
+
+<div class="wrap" id="app"></div>
+
+<footer>Content adapted from the "More Than Conquerors" Workbook (Grades 9–12), Mahragan El-Keraza 2026.</footer>
+
+<script src="data.js"></script>
+<script>
+/* ============================================================
+   CONFIG — adjust these before exam day if needed
+   ============================================================ */
+const EXAM_CONFIG = {
+  totalQuestions: 35,
+  timeLimitMinutes: 40,   // set to 0 to disable the countdown timer
+  maxViolations: 3,       // exits from fullscreen / tab-switches allowed before auto-submit
+  storageKey: "mtc_finalExam_v1"
+};
+
+/* ============================================================
+   BUILD QUESTION BANK from data.js (single source of truth —
+   same verified answer key used by the study app / Exam Prep)
+   ============================================================ */
+let ALL_QUESTIONS = [];
+(function buildBank(){
+  STUDY_DATA.forEach(day => {
+    (day.quiz || []).forEach(q => ALL_QUESTIONS.push(q));
+  });
+})();
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let state = null; // { name, order:[{...q, shuffledOptions, correctIdx}], index, answers:{}, startedAt, violations, deadline }
+const app = document.getElementById("app");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function loadLocks(){
+  try{ return JSON.parse(localStorage.getItem(EXAM_CONFIG.storageKey) || "{}"); }
+  catch(e){ return {}; }
+}
+function saveLocks(locks){
+  localStorage.setItem(EXAM_CONFIG.storageKey, JSON.stringify(locks));
+}
+function progressKey(name){ return EXAM_CONFIG.storageKey + "_progress_" + name.trim().toLowerCase(); }
+function saveProgress(){
+  if(!state) return;
+  localStorage.setItem(progressKey(state.name), JSON.stringify(state));
+}
+function loadProgress(name){
+  try{ return JSON.parse(localStorage.getItem(progressKey(name)) || "null"); }
+  catch(e){ return null; }
+}
+function clearProgress(name){
+  localStorage.removeItem(progressKey(name));
+}
+
+/* ============================================================
+   SCREEN: NAME ENTRY
+   ============================================================ */
+function renderNameGate(){
+  exitLockdown();
+  app.innerHTML = `
+    <div class="card">
+      <h1>Final Exam</h1>
+      <p>This is a <strong>${EXAM_CONFIG.totalQuestions}-question</strong> exam, randomly drawn from all 194 workbook questions. Each student gets <strong>one attempt</strong>.</p>
+      <ul class="rules">
+        <li>Enter the <strong>exact same name</strong> your teacher has on record.</li>
+        <li>Once you start, the exam opens in full-screen and stays there until you submit.</li>
+        <li>Leaving full-screen, switching tabs, or navigating away is tracked. After ${EXAM_CONFIG.maxViolations} attempts to leave, the exam auto-submits with whatever you've answered so far.</li>
+        ${EXAM_CONFIG.timeLimitMinutes ? `<li>You have <strong>${EXAM_CONFIG.timeLimitMinutes} minutes</strong> once you begin.</li>` : ``}
+        <li>If your device sleeps or the page reloads by accident, reopening this page with the same name will resume you right where you left off — it will not reset your progress.</li>
+      </ul>
+      <label for="nameInput">Your full name</label>
+      <input type="text" id="nameInput" placeholder="e.g. Meg Berhanu" autocomplete="off">
+      <div id="gateMsg"></div>
+      <button class="btn" id="startBtn">Begin Exam</button>
+    </div>
+  `;
+  document.getElementById("startBtn").onclick = handleStartClick;
+  document.getElementById("nameInput").addEventListener("keydown", e => { if(e.key==="Enter") handleStartClick(); });
+}
+
+function handleStartClick(){
+  const nameInput = document.getElementById("nameInput");
+  const name = nameInput.value.trim();
+  const msg = document.getElementById("gateMsg");
+  if(!name){
+    msg.innerHTML = `<div class="banner danger">Please enter your name.</div>`;
+    return;
+  }
+  const locks = loadLocks();
+  const key = name.toLowerCase();
+  if(locks[key]){
+    showAlreadyCompleted(name, locks[key]);
+    return;
+  }
+  const resumed = loadProgress(name);
+  if(resumed){
+    state = resumed;
+  } else {
+    const picked = shuffle(ALL_QUESTIONS).slice(0, EXAM_CONFIG.totalQuestions);
+    const order = picked.map(q => {
+      const optIdx = q.options.map((opt,i)=>i);
+      const shuffledIdx = shuffle(optIdx);
+      const shuffledOptions = shuffledIdx.map(i => q.options[i]);
+      const correctSet = new Set(q.correct);
+      const newCorrect = shuffledIdx
+        .map((origIdx, newIdx) => correctSet.has(origIdx) ? newIdx : null)
+        .filter(v => v !== null);
+      return {
+        num: q.num, q: q.q, explain: q.explain,
+        multi: !!q.multi || q.correct.length > 1,
+        options: shuffledOptions,
+        correct: newCorrect
+      };
+    });
+    state = {
+      name, order, index: 0, answers: {},
+      startedAt: Date.now(),
+      deadline: EXAM_CONFIG.timeLimitMinutes ? Date.now() + EXAM_CONFIG.timeLimitMinutes*60000 : null,
+      violations: 0,
+      finished: false
+    };
+    saveProgress();
+  }
+  enterLockdown();
+  renderQuestion();
+  startTimerLoop();
+}
+
+function showAlreadyCompleted(name, record){
+  app.innerHTML = `
+    <div class="card">
+      <h1>Already completed</h1>
+      <p>${escapeHtml(name)} has already submitted this exam on ${new Date(record.submittedAt).toLocaleString()}.</p>
+      <div class="score-big">${record.score} / ${record.total}</div>
+      <div class="score-sub">This exam allows one attempt. If you believe this is a mistake, talk to your teacher — clearing browser data on this device is the only way to reset it, and that also erases the attempt record your teacher can't otherwise see.</div>
+      <button class="btn secondary" onclick="renderNameGate()">Back</button>
+    </div>
+  `;
+}
+
+function escapeHtml(s){
+  const d = document.createElement("div"); d.innerText = s; return d.innerHTML;
+}
+
+/* ============================================================
+   LOCKDOWN: fullscreen, tab-switch, back-button, copy, unload
+   ============================================================ */
+let lockdownActive = false;
+let historyTrap = false;
+
+function enterLockdown(){
+  lockdownActive = true;
+  requestFS();
+  document.addEventListener("fullscreenchange", onFsChange);
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  window.addEventListener("blur", onWindowBlur);
+  window.addEventListener("beforeunload", onBeforeUnload);
+  document.addEventListener("contextmenu", blockEvent);
+  document.addEventListener("copy", blockEvent);
+  document.addEventListener("cut", blockEvent);
+  document.addEventListener("keydown", blockDevKeys);
+  if(!historyTrap){
+    history.pushState({exam:true}, "", location.href);
+    window.addEventListener("popstate", onPopState);
+    historyTrap = true;
+  }
+}
+function exitLockdown(){
+  lockdownActive = false;
+  document.removeEventListener("fullscreenchange", onFsChange);
+  document.removeEventListener("visibilitychange", onVisibilityChange);
+  window.removeEventListener("blur", onWindowBlur);
+  window.removeEventListener("beforeunload", onBeforeUnload);
+  document.removeEventListener("contextmenu", blockEvent);
+  document.removeEventListener("copy", blockEvent);
+  document.removeEventListener("cut", blockEvent);
+  document.removeEventListener("keydown", blockDevKeys);
+  if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+}
+function requestFS(){
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+  if(req) req.call(el).catch(()=>{});
+}
+function blockEvent(e){ if(lockdownActive){ e.preventDefault(); return false; } }
+function blockDevKeys(e){
+  if(!lockdownActive) return;
+  const k = e.key ? e.key.toLowerCase() : "";
+  if(k === "f12") { e.preventDefault(); return; }
+  if((e.ctrlKey||e.metaKey) && e.shiftKey && ["i","j","c"].includes(k)){ e.preventDefault(); return; }
+  if((e.ctrlKey||e.metaKey) && ["u","p","s"].includes(k)){ e.preventDefault(); return; }
+}
+function onBeforeUnload(e){
+  if(!lockdownActive || (state && state.finished)) return;
+  e.preventDefault();
+  e.returnValue = "";
+  return "";
+}
+function onPopState(){
+  if(lockdownActive && state && !state.finished){
+    history.pushState({exam:true}, "", location.href);
+    registerViolation("used browser navigation");
+  }
+}
+function onFsChange(){
+  if(!lockdownActive || (state && state.finished)) return;
+  if(!document.fullscreenElement){
+    registerViolation("exited full-screen");
+  }
+}
+function onVisibilityChange(){
+  if(!lockdownActive || (state && state.finished)) return;
+  if(document.hidden){
+    registerViolation("switched away from this tab");
+  }
+}
+function onWindowBlur(){
+  if(!lockdownActive || (state && state.finished)) return;
+  // blur fires a lot (e.g. clicking address bar); only count if page is also hidden-ish
+  // handled primarily via visibilitychange; blur kept as a soft backstop, no increment here.
+}
+function registerViolation(reason){
+  if(!state || state.finished) return;
+  state.violations = (state.violations||0) + 1;
+  saveProgress();
+  if(state.violations >= EXAM_CONFIG.maxViolations){
+    autoSubmit(`Auto-submitted: too many attempts to leave the exam (${reason}).`);
+  } else {
+    showViolationOverlay(reason);
+  }
+}
+function showViolationOverlay(reason){
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+  overlay.id = "violationOverlay";
+  overlay.innerHTML = `
+    <div class="overlay-box">
+      <h2>⚠️ Stay on the exam</h2>
+      <p>You just ${escapeHtml(reason)}. This has been recorded (${state.violations}/${EXAM_CONFIG.maxViolations}).</p>
+      <p>If this happens ${EXAM_CONFIG.maxViolations} times, your exam will auto-submit with your current answers.</p>
+      <button class="btn" id="resumeBtn">Resume Exam</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById("resumeBtn").onclick = () => {
+    overlay.remove();
+    requestFS();
+  };
+}
+
+/* ============================================================
+   TIMER
+   ============================================================ */
+let timerHandle = null;
+function startTimerLoop(){
+  if(timerHandle) clearInterval(timerHandle);
+  if(!state.deadline){ return; }
+  timerHandle = setInterval(() => {
+    if(!state || state.finished){ clearInterval(timerHandle); return; }
+    const remain = state.deadline - Date.now();
+    const el = document.getElementById("timerDisplay");
+    if(remain <= 0){
+      clearInterval(timerHandle);
+      autoSubmit("Auto-submitted: time limit reached.");
+      return;
+    }
+    if(el){
+      const m = Math.floor(remain/60000), s = Math.floor((remain%60000)/1000);
+      el.textContent = `⏱ ${m}:${s.toString().padStart(2,"0")}`;
+      el.classList.toggle("low", remain < 5*60000);
+    }
+  }, 1000);
+}
+
+/* ============================================================
+   QUESTION FLOW
+   ============================================================ */
+function renderQuestion(){
+  const { order, index } = state;
+  const q = order[index];
+  const chosen = state.answers[index] || [];
+  const pct = Math.round(((index)/order.length)*100);
+
+  app.innerHTML = `
+    <div class="exam-header">
+      <div class="exam-progress">Question ${index+1} of ${order.length}</div>
+      ${state.deadline ? `<div class="exam-timer" id="timerDisplay">⏱ --:--</div>` : ``}
+    </div>
+    <div class="qbar-outer"><div class="qbar-inner" style="width:${pct}%"></div></div>
+    <div class="card">
+      <div class="q-num">${escapeHtml(state.name)} · ${q.multi ? "Select ALL that apply" : "Select one"}</div>
+      <div class="q-text">${escapeHtml(q.q)}</div>
+      <div id="optsWrap"></div>
+      <div class="nav-row">
+        <button class="btn secondary" id="prevBtn" ${index===0 ? "disabled":""}>← Prev</button>
+        <button class="btn" id="nextBtn">${index === order.length-1 ? "Review & Submit" : "Next →"}</button>
+      </div>
+    </div>
+  `;
+  const wrap = document.getElementById("optsWrap");
+  q.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt" + (q.multi ? " multi" : "") + (chosen.includes(i) ? " selected" : "");
+    div.innerHTML = `<div class="marker"></div><div>${escapeHtml(opt)}</div>`;
+    div.onclick = () => selectOption(i, q);
+    wrap.appendChild(div);
+  });
+  document.getElementById("prevBtn").onclick = () => { state.index--; saveProgress(); renderQuestion(); };
+  document.getElementById("nextBtn").onclick = () => {
+    if(index === order.length-1){ showSubmitConfirm(); }
+    else { state.index++; saveProgress(); renderQuestion(); }
+  };
+  if(state.deadline){
+    const remain = state.deadline - Date.now();
+    const el = document.getElementById("timerDisplay");
+    const m = Math.floor(remain/60000), s = Math.floor((remain%60000)/1000);
+    el.textContent = `⏱ ${m}:${s.toString().padStart(2,"0")}`;
+  }
+}
+
+function selectOption(i, q){
+  const idx = state.index;
+  let chosen = state.answers[idx] || [];
+  if(q.multi){
+    chosen = chosen.includes(i) ? chosen.filter(x=>x!==i) : [...chosen, i];
+  } else {
+    chosen = [i];
+  }
+  state.answers[idx] = chosen;
+  saveProgress();
+  renderQuestion();
+}
+
+function showSubmitConfirm(){
+  const unanswered = state.order.filter((q,i) => !(state.answers[i] && state.answers[i].length));
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+  overlay.innerHTML = `
+    <div class="overlay-box">
+      <h2>Submit exam?</h2>
+      <p>${unanswered.length ? `You have <strong>${unanswered.length}</strong> unanswered question(s). ` : ""}Once submitted, this exam is locked — no retakes.</p>
+      <button class="btn" id="confirmSubmitBtn">Submit Final Answers</button>
+      <button class="btn secondary" id="cancelSubmitBtn" style="margin-top:10px;">Go Back</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById("confirmSubmitBtn").onclick = () => { overlay.remove(); finalizeSubmit("Submitted by student."); };
+  document.getElementById("cancelSubmitBtn").onclick = () => overlay.remove();
+}
+
+function autoSubmit(reason){
+  finalizeSubmit(reason);
+}
+
+function finalizeSubmit(reasonNote){
+  if(!state || state.finished) return;
+  state.finished = true;
+  clearInterval(timerHandle);
+  let score = 0;
+  const details = state.order.map((q, i) => {
+    const chosen = (state.answers[i] || []).slice().sort();
+    const correct = q.correct.slice().sort();
+    const isCorrect = chosen.length === correct.length && chosen.every((v,idx)=>v===correct[idx]);
+    if(isCorrect) score++;
+    return {
+      num: q.num, q: q.q, options: q.options,
+      chosen, correct, isCorrect, explain: q.explain
+    };
+  });
+  const locks = loadLocks();
+  locks[state.name.toLowerCase()] = {
+    displayName: state.name,
+    score, total: state.order.length,
+    submittedAt: Date.now(),
+    violations: state.violations,
+    note: reasonNote,
+    details
+  };
+  saveLocks(locks);
+  clearProgress(state.name);
+  exitLockdown();
+  renderResults(locks[state.name.toLowerCase()]);
+}
+
+function renderResults(record){
+  const pct = Math.round((record.score/record.total)*100);
+  app.innerHTML = `
+    <div class="card">
+      <h1>Exam Complete</h1>
+      ${record.violations > 0 ? `<div class="banner${record.note.startsWith("Auto") ? " danger" : ""}">${escapeHtml(record.note)} (${record.violations} recorded attempt(s) to leave.)</div>` : ``}
+      <div class="score-big">${record.score} / ${record.total}</div>
+      <div class="score-sub">${pct}% · ${escapeHtml(record.displayName)}</div>
+      <button class="btn secondary" id="toggleReviewBtn">Show Answer Review</button>
+      <div id="reviewWrap" style="display:none; margin-top:16px;"></div>
+    </div>
+  `;
+  document.getElementById("toggleReviewBtn").onclick = () => {
+    const rw = document.getElementById("reviewWrap");
+    if(rw.style.display === "none"){
+      rw.style.display = "block";
+      rw.innerHTML = record.details.map(d => `
+        <div class="review-item ${d.isCorrect ? "correct":"incorrect"}">
+          <div class="review-q">${escapeHtml(d.q)}</div>
+          ${d.chosen.length ? `<div class="review-line ${d.isCorrect?"":"your-wrong"}">Your answer: ${d.chosen.map(i=>escapeHtml(d.options[i])).join("; ")}</div>` : `<div class="review-line your-wrong">You left this blank.</div>`}
+          ${!d.isCorrect ? `<div class="review-line correct-answer">Correct answer: ${d.correct.map(i=>escapeHtml(d.options[i])).join("; ")}</div>` : ``}
+          ${d.explain ? `<div class="review-explain">${escapeHtml(d.explain)}</div>` : ``}
+        </div>
+      `).join("");
+      document.getElementById("toggleReviewBtn").textContent = "Hide Answer Review";
+    } else {
+      rw.style.display = "none";
+      document.getElementById("toggleReviewBtn").textContent = "Show Answer Review";
+    }
+  };
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderNameGate();
+</script>
+</body>
+</html>
